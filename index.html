@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div id="board"></div>
+    <button onclick="resetGame()">Reset</button>
+
+<script>
+let boardDiv = document.getElementById("board");
+
+function renderBoard(board) {
+    boardDiv.innerHTML = "";
+    board.forEach((cell, i) => {
+        let btn = document.createElement("button");
+        btn.innerText = cell;
+        btn.onclick = () => makeMove(i);
+        boardDiv.appendChild(btn);
+    });
+}
+
+function makeMove(index) {
+    fetch('/move', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({index})
+    })
+    .then(res => res.json())
+    .then(data => {
+        renderBoard(data.board);
+        if (data.winner) alert(data.winner + " wins!");
+    });
+}
+
+function resetGame() {
+    fetch('/reset')
+    .then(res => res.json())
+    .then(data => renderBoard(data.board));
+}
+
+resetGame();
+</script>
+</body>
+</html>
